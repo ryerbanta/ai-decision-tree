@@ -16,6 +16,8 @@
     --accent-no: #ff5c5c;
     --accent-gold: #f0c040;
     --accent-neutral: #6ec6f5;
+    --accent-school: #b088f9;
+    --accent-work: #c8f04a;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +36,6 @@
     overflow-x: hidden;
   }
 
-  /* Subtle grid background */
   body::before {
     content: '';
     position: fixed;
@@ -76,9 +77,27 @@
     color: var(--text);
   }
 
-  .header-title span {
-    color: var(--accent-yes);
+  .header-title .accent {
+    transition: color 0.4s;
   }
+
+  /* Context badge shown after selection */
+  .context-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--context-color, var(--border));
+    color: var(--context-color, var(--muted));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .context-badge.visible { opacity: 1; }
 
   /* Progress bar */
   .progress-track {
@@ -91,8 +110,8 @@
 
   .progress-fill {
     height: 100%;
-    background: var(--accent-yes);
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    background: var(--context-color, var(--accent-yes));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.4s;
   }
 
   .progress-label {
@@ -168,7 +187,7 @@
     display: block;
   }
 
-  /* Checkbox list for Q4 */
+  /* Checkbox list */
   .check-list {
     margin-bottom: 1.8rem;
     display: flex;
@@ -188,12 +207,12 @@
   }
 
   .check-item:hover {
-    border-color: var(--accent-yes);
+    border-color: var(--context-color, var(--accent-yes));
     background: rgba(200,240,74,0.04);
   }
 
   .check-item.selected {
-    border-color: var(--accent-yes);
+    border-color: var(--context-color, var(--accent-yes));
     background: rgba(200,240,74,0.07);
   }
 
@@ -209,8 +228,8 @@
   }
 
   .check-item.selected .check-box {
-    background: var(--accent-yes);
-    border-color: var(--accent-yes);
+    background: var(--context-color, var(--accent-yes));
+    border-color: var(--context-color, var(--accent-yes));
   }
 
   .check-item.selected .check-box::after {
@@ -248,64 +267,96 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.18s, color 0.18s, transform 0.12s;
-    position: relative;
-    overflow: hidden;
   }
 
   .btn:active { transform: scale(0.97); }
 
-  .btn-yes {
-    color: var(--accent-yes);
-  }
-  .btn-yes:hover {
-    background: var(--accent-yes);
-    color: var(--bg);
-  }
+  .btn-yes  { color: var(--accent-yes); }
+  .btn-yes:hover  { background: var(--accent-yes); color: var(--bg); }
 
-  .btn-no {
-    color: var(--accent-no);
-  }
-  .btn-no:hover {
-    background: var(--accent-no);
-    color: #fff;
-  }
+  .btn-no   { color: var(--accent-no); }
+  .btn-no:hover   { background: var(--accent-no); color: #fff; }
 
-  .btn-continue {
-    color: var(--accent-neutral);
-  }
-  .btn-continue:hover {
-    background: var(--accent-neutral);
-    color: var(--bg);
-  }
+  .btn-continue { color: var(--accent-neutral); }
+  .btn-continue:hover { background: var(--accent-neutral); color: var(--bg); }
 
   .btn-restart {
     color: var(--muted);
     border-color: var(--border);
     font-size: 0.65rem;
   }
-  .btn-restart:hover {
-    color: var(--text);
-    border-color: var(--muted);
+  .btn-restart:hover { color: var(--text); border-color: var(--muted); }
+
+  /* Context selector */
+  .context-selector {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
-  /* Outcome card styles */
-  .outcome-stop {
-    --accent-color: var(--accent-no);
+  .ctx-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.6rem 1.2rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+    animation: fadeSlideIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
+    position: relative;
+    overflow: hidden;
   }
 
-  .outcome-go {
-    --accent-color: var(--accent-yes);
+  .ctx-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--ctx-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
   }
 
-  .outcome-warning {
-    --accent-color: var(--accent-gold);
+  .ctx-btn:hover::before { transform: scaleX(1); }
+
+  .ctx-btn:hover {
+    border-color: var(--ctx-accent);
+    background: rgba(255,255,255,0.03);
+    transform: translateY(-2px);
   }
 
-  .outcome-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+  .ctx-btn:active { transform: scale(0.98); }
+
+  .ctx-icon {
+    font-size: 1.8rem;
     display: block;
+    margin-bottom: 0.9rem;
   }
+
+  .ctx-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ctx-accent);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .ctx-desc {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  /* Outcomes */
+  .outcome-stop    { --accent-color: var(--accent-no); }
+  .outcome-go      { --accent-color: var(--accent-yes); }
+  .outcome-warning { --accent-color: var(--accent-gold); }
+
+  .outcome-icon  { font-size: 2rem; margin-bottom: 1rem; display: block; }
 
   .outcome-title {
     font-family: 'Playfair Display', serif;
@@ -315,8 +366,8 @@
     line-height: 1.2;
   }
 
-  .outcome-stop .outcome-title { color: var(--accent-no); }
-  .outcome-go .outcome-title   { color: var(--accent-yes); }
+  .outcome-stop .outcome-title    { color: var(--accent-no); }
+  .outcome-go .outcome-title      { color: var(--accent-yes); }
   .outcome-warning .outcome-title { color: var(--accent-gold); }
 
   .outcome-body {
@@ -326,18 +377,7 @@
     margin-bottom: 1.8rem;
   }
 
-  .outcome-body strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  /* Watchout list */
-  .watchout-list {
-    margin-top: 0.6rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
+  .watchout-list { margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
 
   .watchout-list li {
     list-style: none;
@@ -356,70 +396,73 @@
   }
 
   /* Footer */
-  .footer {
-    margin-top: 2rem;
-    text-align: center;
-  }
-
-  .footer span {
-    font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    color: var(--border);
-    text-transform: uppercase;
-  }
+  .footer { margin-top: 2rem; text-align: center; }
+  .footer span { font-size: 0.6rem; letter-spacing: 0.15em; color: var(--border); text-transform: uppercase; }
 </style>
 </head>
 <body>
 
 <div class="shell">
   <div class="header">
-    <p class="header-label">Workplace Policy Tool</p>
-    <h1 class="header-title">Should I Use<br><span>AI for This?</span></h1>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    <p class="header-label" id="headerLabel">Decision Guide</p>
+    <h1 class="header-title">Should I Use<br><span class="accent" id="accentText">AI for This?</span></h1>
+    <div class="context-badge" id="contextBadge"></div>
+    <div class="progress-track" id="progressTrack" style="display:none">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
     </div>
-    <p class="progress-label" id="progressLabel">Step 0 of 9</p>
+    <p class="progress-label" id="progressLabel"></p>
   </div>
 
   <div id="cardContainer"></div>
 
-  <div class="footer">
-    <span>AI Workplace Decision Guide</span>
-  </div>
+  <div class="footer"><span>AI Use Decision Guide</span></div>
 </div>
 
 <script>
-const TOTAL_STEPS = 9;
+// ─── State ───────────────────────────────────────────────────────────────────
+let currentContext = null; // 'school' | 'work'
+let currentNode = null;
+let selectedOptions = [];
 
-// Decision tree nodes
-const nodes = {
-  q1: {
-    type: 'question',
-    step: 1,
+const CONTEXT_META = {
+  school: {
+    label: 'School',
+    color: 'var(--accent-school)',
+    accentText: 'AI at School?',
+    badge: '🎓 School Mode',
+    totalSteps: 8
+  },
+  work: {
+    label: 'Workplace',
+    color: 'var(--accent-work)',
+    accentText: 'AI at Work?',
+    badge: '💼 Workplace Mode',
+    totalSteps: 9
+  }
+};
+
+// ─── WORKPLACE nodes ──────────────────────────────────────────────────────────
+const workNodes = {
+  wq1: {
+    type: 'question', step: 1,
     text: 'Does your organization allow AI use for this type of work?',
     info: 'Your company may ban AI for confidential tasks, customer data, HR processes, or regulated industries.',
-    yes: 'q2',
-    no: 'stop_policy'
+    yes: 'wq2', no: 'w_stop_policy'
   },
-  q2: {
-    type: 'question',
-    step: 2,
+  wq2: {
+    type: 'question', step: 2,
     text: 'Does your company have an approved AI tool or platform you must use?',
     info: 'Examples: A corporate subscription, a private instance, or tools vetted for security.',
-    yes: 'q3',
-    no: 'stop_supervisor'
+    yes: 'wq3', no: 'w_stop_supervisor'
   },
-  q3: {
-    type: 'question',
-    step: 3,
+  wq3: {
+    type: 'question', step: 3,
     text: 'Will using AI expose confidential, proprietary, or personal data?',
     info: 'Ask yourself: Does this include customer information? Internal documents? Employee details? Health, financial, or personally identifiable information (PII)? Trade secrets or internal strategies?',
-    yes: 'stop_sensitive',
-    no: 'q4'
+    yes: 'w_stop_sensitive', no: 'wq4'
   },
-  q4: {
-    type: 'multi',
-    step: 4,
+  wq4: {
+    type: 'multi', step: 4,
     text: 'What is the purpose of the task you are doing?',
     info: 'Select all that apply — this affects appropriate AI use.',
     options: [
@@ -433,141 +476,294 @@ const nodes = {
       'Making decisions or recommendations',
       'Professional judgment or ethics work'
     ],
-    next: 'q5'
+    next: 'wq5'
   },
-  q5: {
-    type: 'question',
-    step: 5,
+  wq5: {
+    type: 'question', step: 5,
     text: 'Will using AI reduce or replace critical job skills you must develop or demonstrate?',
     info: 'Examples: Drafting reports you are responsible for · Analyzing data for accuracy · Practicing job‑specific reasoning · Developing communication or leadership skills',
-    yes: 'stop_skills',
-    no: 'q6'
+    yes: 'w_stop_skills', no: 'wq6'
   },
-  q6: {
-    type: 'question',
-    step: 6,
+  wq6: {
+    type: 'question', step: 6,
     text: 'Could AI produce errors, hallucinations, or misleading information that would cause harm if used?',
     info: 'Think about: Safety risks · Legal risks · Regulatory violations · Customer misinformation · Financial errors · Damaging brand reputation',
-    yes: 'stop_errors',
-    no: 'q7'
+    yes: 'w_stop_errors', no: 'wq7'
   },
-  q7: {
-    type: 'question',
-    step: 7,
+  wq7: {
+    type: 'question', step: 7,
     text: 'Do you have enough expertise to verify AI\'s output?',
     info: 'Ask yourself: Do I know this topic well enough to detect mistakes? Could I check this against reliable sources? Am I able to correct AI errors?',
-    yes: 'q8',
-    no: 'stop_expertise'
+    yes: 'wq8', no: 'w_stop_expertise'
   },
-  q8: {
-    type: 'question',
-    step: 8,
+  wq8: {
+    type: 'question', step: 8,
     text: 'Are you allowed to disclose AI use in this task?',
     info: 'In some workplaces: You must disclose · You must not disclose · You can only use AI for internal drafts · Public‑facing AI‑generated content may be restricted',
-    yes: 'q9',
-    no: 'stop_disclose'
+    yes: 'wq9', no: 'w_stop_disclose'
   },
-  q9: {
-    type: 'question',
-    step: 9,
+  wq9: {
+    type: 'question', step: 9,
     text: 'Will AI improve efficiency, clarity, accuracy, or creativity without replacing your professional judgment?',
     info: 'AI supports your work when: Drafting emails or outlines · Improving readability · Brainstorming ideas · Organizing information · Creating templates or summaries\n\nAI should NOT lead: Making hiring/HR decisions · Generating medical, legal, or financial advice · Serving clients without human oversight',
-    yes: 'go',
-    no: 'stop_misuse'
+    yes: 'w_go', no: 'w_stop_misuse'
   },
-
   // Outcomes
-  stop_policy: {
+  w_stop_policy: {
     type: 'stop',
     title: 'Stop. Do Not Use AI.',
-    body: 'Your organization does not permit AI use for this type of work. Using AI here may violate company policy, regulatory requirements, or contractual obligations.',
-    step: null
+    body: 'Your organization does not permit AI use for this type of work. Using AI here may violate company policy, regulatory requirements, or contractual obligations.'
   },
-  stop_supervisor: {
+  w_stop_supervisor: {
     type: 'stop',
     title: 'Stop or Ask Your Supervisor.',
-    body: 'You should only use platforms approved and vetted by your organization. If no approved tool exists, check with your supervisor before proceeding.',
-    step: null
+    body: 'You should only use platforms approved and vetted by your organization. If no approved tool exists, check with your supervisor before proceeding.'
   },
-  stop_sensitive: {
+  w_stop_sensitive: {
     type: 'stop',
     title: 'Stop. Do Not Enter Sensitive Data.',
-    body: 'This task involves confidential, proprietary, or personal data. Do not enter it into AI tools — this includes public platforms and potentially even approved tools depending on your organization\'s data handling policy.',
-    step: null
+    body: 'This task involves confidential, proprietary, or personal data. Do not enter it into AI tools — this includes public platforms and potentially even approved tools depending on your organization\'s data handling policy.'
   },
-  stop_skills: {
+  w_stop_skills: {
     type: 'warning',
     title: 'Stop or Limit AI to Background Support.',
-    body: 'This task involves skills you need to develop or demonstrate yourself. AI can assist in the background, but should not produce the primary deliverable for you.',
-    step: null
+    body: 'This task involves skills you need to develop or demonstrate yourself. AI can assist in the background, but should not produce the primary deliverable for you.'
   },
-  stop_errors: {
+  w_stop_errors: {
     type: 'warning',
     title: 'Stop or Fact-Check Extremely Carefully.',
-    body: 'AI output in this area carries meaningful risk of errors or hallucinations with real consequences. If you proceed, you must rigorously verify every claim, figure, or recommendation.',
-    step: null
+    body: 'AI output in this area carries meaningful risk of errors or hallucinations with real consequences. If you proceed, you must rigorously verify every claim, figure, or recommendation.'
   },
-  stop_expertise: {
+  w_stop_expertise: {
     type: 'stop',
     title: 'Stop or Consult an Expert.',
-    body: 'You may not have sufficient expertise to catch AI mistakes in this area. Consult a supervisor or subject matter expert before using or sharing AI output.',
-    step: null
+    body: 'You may not have sufficient expertise to catch AI mistakes in this area. Consult a supervisor or subject matter expert before using or sharing AI output.'
   },
-  stop_disclose: {
+  w_stop_disclose: {
     type: 'stop',
     title: 'Stop and Check Policy.',
-    body: 'Disclosure requirements for this task are unclear or your organization restricts AI use in this context. Review your company\'s AI disclosure policy before proceeding.',
-    step: null
+    body: 'Disclosure requirements for this task are unclear or your organization restricts AI use in this context. Review your company\'s AI disclosure policy before proceeding.'
   },
-  stop_misuse: {
+  w_stop_misuse: {
     type: 'stop',
     title: 'Stop. You May Be Misusing AI.',
-    body: 'AI should support your professional judgment, not replace it. If this task requires AI to do the substantive thinking for you, it\'s not an appropriate use.',
-    step: null
+    body: 'AI should support your professional judgment, not replace it. If this task requires AI to do the substantive thinking for you, it\'s not an appropriate use.'
   },
-  go: {
+  w_go: {
     type: 'go',
     title: 'You May Use AI Responsibly. 🎉',
     body: 'You\'ve cleared all checkpoints. Proceed with your approved AI tool, maintain your professional judgment, verify outputs, and disclose as required.',
-    step: null
+    watchout: [
+      'Entering confidential or regulated data into public AI tools',
+      'Using AI for client‑facing content without approval',
+      'Relying on AI to replace essential job skills',
+      'Copying AI‑generated text into policy, legal, HR, or contractual documents',
+      'Using AI to make employment decisions',
+      'Generating inaccurate reports that go unverified',
+      'Misrepresenting AI‑generated work as strictly your own',
+      'Using unapproved AI platforms that violate security policies',
+      'Using AI to bypass required training or development'
+    ]
   }
 };
 
-const watchoutItems = [
-  'Entering confidential or regulated data into public AI tools',
-  'Using AI for client‑facing content without approval',
-  'Relying on AI to replace essential job skills',
-  'Copying AI‑generated text into policy, legal, HR, or contractual documents',
-  'Using AI to make employment decisions',
-  'Generating inaccurate reports that go unverified',
-  'Misrepresenting AI‑generated work as strictly your own',
-  'Using unapproved AI platforms that violate security policies',
-  'Using AI to bypass required training or development'
-];
+// ─── SCHOOL nodes ─────────────────────────────────────────────────────────────
+const schoolNodes = {
+  sq1: {
+    type: 'question', step: 1,
+    text: 'Does your school, teacher, or assignment allow AI use?',
+    info: 'Many schools have AI policies that vary by class, subject, or assignment type. When in doubt, ask your teacher before using AI.',
+    yes: 'sq2', no: 's_stop_policy'
+  },
+  sq2: {
+    type: 'question', step: 2,
+    text: 'Does your school or teacher require a specific approved AI tool?',
+    info: 'Some schools provide approved AI platforms or restrict students to specific tools to ensure safety, privacy, and academic integrity.',
+    yes: 'sq3', no: 's_stop_tool'
+  },
+  sq3: {
+    type: 'question', step: 3,
+    text: 'Does this assignment ask you to demonstrate your own knowledge, reasoning, or writing?',
+    info: 'Examples: Essays, exams, math proofs, lab reports, personal reflections, reading responses, or any work meant to show what YOU have learned.',
+    yes: 's_stop_academic', no: 'sq4'
+  },
+  sq4: {
+    type: 'multi', step: 4,
+    text: 'What are you using AI for in this task?',
+    info: 'Select all that apply.',
+    options: [
+      'Brainstorming or generating ideas',
+      'Outlining or organizing content',
+      'Drafting text for editing',
+      'Researching or summarizing information',
+      'Checking grammar or clarity',
+      'Getting feedback on my own writing',
+      'Coding or debugging',
+      'Translating content',
+      'Creating visuals or presentations'
+    ],
+    next: 'sq5'
+  },
+  sq5: {
+    type: 'question', step: 5,
+    text: 'Will using AI prevent you from developing skills this assignment is designed to build?',
+    info: 'Think about: Critical thinking · Writing skills · Problem-solving · Subject-matter understanding · Research and analysis abilities',
+    yes: 's_stop_skills', no: 'sq6'
+  },
+  sq6: {
+    type: 'question', step: 6,
+    text: 'Could you verify and correct any errors in AI\'s output for this task?',
+    info: 'AI frequently makes factual mistakes, misquotes sources, and generates plausible-sounding but wrong information. If you can\'t check it, you\'re at risk of submitting errors.',
+    yes: 'sq7', no: 's_stop_verify'
+  },
+  sq7: {
+    type: 'question', step: 7,
+    text: 'Will you disclose AI use to your teacher if required, and present the final work as genuinely your own thinking?',
+    info: 'Submitting AI-generated work as your own without disclosure is academic dishonesty at most institutions. Transparency protects your integrity.',
+    yes: 'sq8', no: 's_stop_integrity'
+  },
+  sq8: {
+    type: 'question', step: 8,
+    text: 'Will AI support your learning rather than replace the work of actually learning?',
+    info: 'AI should help you: Understand concepts · Organize your ideas · Check your reasoning · Practice and iterate\n\nAI should NOT: Write your assignments for you · Do the thinking the assignment requires · Replace reading, studying, or practicing',
+    yes: 's_go', no: 's_stop_misuse'
+  },
+  // Outcomes
+  s_stop_policy: {
+    type: 'stop',
+    title: 'Stop. AI Is Not Permitted Here.',
+    body: 'Your school, teacher, or assignment does not allow AI use for this work. Proceeding may violate academic integrity policies and could have serious consequences.'
+  },
+  s_stop_tool: {
+    type: 'stop',
+    title: 'Stop or Ask Your Teacher.',
+    body: 'If your school requires a specific approved AI tool, use only that tool. If no approved tool has been provided for this task, ask your teacher before using any AI.'
+  },
+  s_stop_academic: {
+    type: 'stop',
+    title: 'Stop. This Is Your Work to Do.',
+    body: 'This assignment is designed to assess your own knowledge, reasoning, or writing. Using AI to complete it would undermine the purpose of the assignment and likely violates academic integrity policy.'
+  },
+  s_stop_skills: {
+    type: 'warning',
+    title: 'Proceed Carefully or Limit AI Use.',
+    body: 'If this assignment is meant to help you build a skill, using AI too heavily defeats the purpose. Consider using AI only for minor support — like brainstorming or proofreading — while doing the core work yourself.'
+  },
+  s_stop_verify: {
+    type: 'stop',
+    title: 'Stop. You Can\'t Safely Verify the Output.',
+    body: 'If you don\'t know enough about the topic to catch AI errors, using AI output in your work is risky. Study the material first, or ask your teacher for help.'
+  },
+  s_stop_integrity: {
+    type: 'stop',
+    title: 'Stop. Academic Integrity Is at Risk.',
+    body: 'Presenting AI-generated content as your own without disclosure is dishonest and violates academic integrity policies at most schools. Be transparent with your teacher about how you used AI.'
+  },
+  s_stop_misuse: {
+    type: 'stop',
+    title: 'Stop. This Isn\'t Supporting Your Learning.',
+    body: 'AI should help you learn and grow — not bypass the work of actually learning. If AI is doing the thinking the assignment requires, it\'s not an appropriate use for school.'
+  },
+  s_go: {
+    type: 'go',
+    title: 'You May Use AI Responsibly. 🎉',
+    body: 'You\'ve cleared all checkpoints. Use your approved AI tool to support your work, verify what it produces, disclose use if required, and keep your own thinking at the center.',
+    watchout: [
+      'Submitting AI-generated writing as your own without disclosure',
+      'Using AI to complete assignments designed to test what you know',
+      'Copying AI output without checking it for errors or bias',
+      'Relying on AI instead of developing your own skills and understanding',
+      'Using AI that hasn\'t been approved by your school or teacher',
+      'Using AI to bypass required reading, research, or practice',
+      'Allowing AI to replace your own critical thinking and analysis',
+      'Entering personal information about yourself or classmates into AI tools'
+    ]
+  }
+};
 
-let currentNode = 'q1';
-let selectedOptions = [];
-
-function getProgress(node) {
-  const n = nodes[node];
-  if (!n || n.step === null) return 100;
-  return Math.round(((n.step - 1) / TOTAL_STEPS) * 100);
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getNodes() {
+  return currentContext === 'school' ? schoolNodes : workNodes;
 }
 
-function getStepLabel(node) {
-  const n = nodes[node];
-  if (!n || n.step === null) return '';
-  return `Step ${n.step} of ${TOTAL_STEPS}`;
+function getMeta() {
+  return CONTEXT_META[currentContext];
+}
+
+function getFirstNode() {
+  return currentContext === 'school' ? 'sq1' : 'wq1';
+}
+
+function getProgress(nodeKey) {
+  const node = getNodes()[nodeKey];
+  if (!node || !node.step) return 100;
+  return Math.round(((node.step - 1) / getMeta().totalSteps) * 100);
 }
 
 function updateProgress(nodeKey) {
+  const node = getNodes()[nodeKey];
   const pct = getProgress(nodeKey);
   document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = getStepLabel(nodeKey);
+  if (node && node.step) {
+    document.getElementById('progressLabel').textContent = `Step ${node.step} of ${getMeta().totalSteps}`;
+  } else {
+    document.getElementById('progressLabel').textContent = '';
+  }
+}
+
+function setContextTheme(ctx) {
+  const color = CONTEXT_META[ctx].color;
+  document.documentElement.style.setProperty('--context-color', color);
+  document.getElementById('accentText').style.color = color;
+  document.getElementById('progressFill').style.background = color;
+
+  const badge = document.getElementById('contextBadge');
+  badge.textContent = CONTEXT_META[ctx].badge;
+  badge.style.setProperty('--context-color', color);
+  badge.classList.add('visible');
+
+  document.getElementById('progressTrack').style.display = 'block';
+  document.getElementById('accentText').textContent = CONTEXT_META[ctx].accentText;
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderSelector() {
+  currentContext = null;
+  document.getElementById('accentText').textContent = 'AI for This?';
+  document.getElementById('accentText').style.color = '';
+  document.getElementById('contextBadge').classList.remove('visible');
+  document.getElementById('progressTrack').style.display = 'none';
+  document.getElementById('progressLabel').textContent = '';
+
+  const container = document.getElementById('cardContainer');
+  container.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'context-selector';
+  wrap.innerHTML = `
+    <button class="ctx-btn" style="--ctx-accent: var(--accent-school)" onclick="selectContext('school')">
+      <span class="ctx-icon">🎓</span>
+      <span class="ctx-title">School</span>
+      <span class="ctx-desc">For students navigating AI use on assignments, projects, and academic work.</span>
+    </button>
+    <button class="ctx-btn" style="--ctx-accent: var(--accent-work)" onclick="selectContext('work')">
+      <span class="ctx-icon">💼</span>
+      <span class="ctx-title">Workplace</span>
+      <span class="ctx-desc">For professionals navigating AI use within company policy and job responsibilities.</span>
+    </button>
+  `;
+  container.appendChild(wrap);
+}
+
+function selectContext(ctx) {
+  currentContext = ctx;
+  setContextTheme(ctx);
+  currentNode = getFirstNode();
+  renderCard(currentNode);
 }
 
 function renderCard(nodeKey) {
-  const node = nodes[nodeKey];
+  const node = getNodes()[nodeKey];
   const container = document.getElementById('cardContainer');
   container.innerHTML = '';
   selectedOptions = [];
@@ -575,10 +771,12 @@ function renderCard(nodeKey) {
   const card = document.createElement('div');
   card.className = 'card';
 
+  const total = getMeta().totalSteps;
+
   if (node.type === 'question') {
-    card.style.setProperty('--accent-color', 'var(--accent-yes)');
+    card.style.setProperty('--accent-color', 'var(--context-color, var(--accent-yes))');
     card.innerHTML = `
-      <p class="step-number">Question ${node.step} / ${TOTAL_STEPS}</p>
+      <p class="step-number">Question ${node.step} / ${total}</p>
       <p class="question-text">${node.text}</p>
       ${node.info ? `<div class="info-block"><span class="info-label">Consider</span><p>${node.info.replace(/·/g, '<br>·')}</p></div>` : ''}
       <div class="btn-row">
@@ -597,7 +795,7 @@ function renderCard(nodeKey) {
     ).join('');
 
     card.innerHTML = `
-      <p class="step-number">Question ${node.step} / ${TOTAL_STEPS}</p>
+      <p class="step-number">Question ${node.step} / ${total}</p>
       <p class="question-text">${node.text}</p>
       ${node.info ? `<div class="info-block"><span class="info-label">Choose all that apply</span><p>${node.info}</p></div>` : ''}
       <div class="check-list">${checkItems}</div>
@@ -613,7 +811,8 @@ function renderCard(nodeKey) {
       <h2 class="outcome-title">${node.title}</h2>
       <p class="outcome-body">${node.body}</p>
       <div class="btn-row">
-        <button class="btn btn-restart" onclick="restart()">↩ Start Over</button>
+        <button class="btn btn-restart" onclick="restart()">↩ Change Context</button>
+        <button class="btn btn-restart" onclick="restartSame()">↩ Try Again</button>
       </div>
     `;
 
@@ -624,13 +823,14 @@ function renderCard(nodeKey) {
       <h2 class="outcome-title">${node.title}</h2>
       <p class="outcome-body">${node.body}</p>
       <div class="btn-row">
-        <button class="btn btn-restart" onclick="restart()">↩ Start Over</button>
+        <button class="btn btn-restart" onclick="restart()">↩ Change Context</button>
+        <button class="btn btn-restart" onclick="restartSame()">↩ Try Again</button>
       </div>
     `;
 
   } else if (node.type === 'go') {
     card.className = 'card outcome-go';
-    const listItems = watchoutItems.map(w => `<li>${w}</li>`).join('');
+    const listItems = node.watchout.map(w => `<li>${w}</li>`).join('');
     card.innerHTML = `
       <span class="outcome-icon">✅</span>
       <h2 class="outcome-title">${node.title}</h2>
@@ -640,7 +840,8 @@ function renderCard(nodeKey) {
         <ul class="watchout-list">${listItems}</ul>
       </div>
       <div class="btn-row">
-        <button class="btn btn-restart" onclick="restart()">↩ Start Over</button>
+        <button class="btn btn-restart" onclick="restart()">↩ Change Context</button>
+        <button class="btn btn-restart" onclick="restartSame()">↩ Start Over</button>
       </div>
     `;
   }
@@ -668,26 +869,24 @@ function toggleOption(index, el) {
 }
 
 function navigate(nodeKey, isYes) {
-  const node = nodes[nodeKey];
-  let nextKey;
-  if (node.type === 'multi') {
-    nextKey = node.next;
-  } else {
-    nextKey = isYes ? node.yes : node.no;
-  }
+  const node = getNodes()[nodeKey];
+  const nextKey = node.type === 'multi' ? node.next : (isYes ? node.yes : node.no);
   currentNode = nextKey;
   renderCard(nextKey);
 }
 
 function restart() {
-  currentNode = 'q1';
-  renderCard('q1');
+  renderSelector();
+}
+
+function restartSame() {
+  currentNode = getFirstNode();
+  renderCard(currentNode);
   document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('progressLabel').textContent = 'Step 0 of 9';
 }
 
 // Init
-renderCard('q1');
+renderSelector();
 </script>
 </body>
 </html>
