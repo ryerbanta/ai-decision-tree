@@ -1,0 +1,1 @@
+This is a single-page site guiding users through deciding if and how to use AI in the workplace. This was developed for community college students. I used Claude AI to design the site and interactivity.
